@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Introducción al caso</title>
+  <link rel="stylesheet" href="EstiloPreguntas.css">
+  <style>
+    body {
+      background-color: #fff;
+      font-family: 'Georgia', serif;
+      color: #111;
+      margin: 0;
+      padding: 0;
+    }
+
+    .portada {
+      max-width: 800px;
+      margin: 60px auto;
+      padding: 40px;
+      background-color: #fff;
+      border: 2px solid #000;
+      box-shadow: 0 0 20px rgba(0,0,0,0.1);
+    }
+
+    h1 {
+      font-size: 2.2em;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+
+    p {
+      font-size: 1.2em;
+      line-height: 1.6;
+      margin-bottom: 20px;
+    }
+
+    button {
+      display: block;
+      margin: 40px auto 0;
+      padding: 12px 24px;
+      font-size: 1.1em;
+      font-weight: bold;
+      background-color: #000;
+      color: #fff;
+      border: none;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+      border: 2px solid #000;
+    }
+
+    button:hover {
+      background-color: #900;
+      border-color: #900;
+    }
+  </style>
+</head>
+<body>
+  <div class="portada">
+    <h1>Un crimen en Guadalix de la Sierra</h1>
+    <p>La noche del 14 de octubre, alguien fue asesinado en la biblioteca del viejo caserón. Todos ustedes están bajo sospecha. El asesino está entre ustedes.</p>
+    <p>Serán sometidos a una serie de preguntas. Al final, cada uno descubrirá su rol: inocente... o asesino.</p>
+    <p>Responde con sinceridad. El perfil que traces podría condenarte.</p>
+
+    <button class= "botones" onclick="redirigirAPregunta()">Comenzar Interrogatorio</button>
+  </div>
+
+  <script>
+    // Asignar ID único al jugador si no lo tiene
+    if (!localStorage.getItem('miID')) {
+      const miID = crypto.randomUUID();
+      localStorage.setItem('miID', miID);
+    }
+
+    const miID = localStorage.getItem('miID');
+    let asesinoID = localStorage.getItem('asesinoID');
+
+    // Si aún no hay asesino, este jugador lo será
+    if (!asesinoID) {
+      asesinoID = miID;
+      localStorage.setItem('asesinoID', asesinoID);
+    }
+
+    // Guardar el rol secreto del jugador
+    const miRol = miID === asesinoID ? 'asesino' : 'inocente';
+    localStorage.setItem('miRol', miRol);
+
+  
+
+    function redirigirAPregunta() {
+    const paginas = ['Pregunta1.html', 'Pregunta2.html', 'Pregunta3.html','Pregunta4.html'];
+    const aleatoria = paginas[Math.floor(Math.random() * paginas.length)];
+    window.location.href = aleatoria;
+  }
+  </script>
+</body>
+</html>

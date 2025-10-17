@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Unirse a partida</title>
+  <link rel="stylesheet" href="estilos.css">
+</head>
+<body>
+  <div class="portada">
+    <h1>Introduce el código de la partida</h1>
+
+    <input type="text" id="codigo" placeholder="Ej. 784596">
+    <div class="botones">
+      <button onclick="unirse()">Entrar</button>
+      <p id="errorMensaje" style="display:none; color:#e63946; font-size:20px; margin-top:20px;"></p>
+    </div>
+  </div>
+
+  <script>
+
+localStorage.setItem('soyHost', 'false');
+
+    
+
+   // Ya tienes Firebase conectado en el <head>
+  const nombre = localStorage.getItem('nombreJugador');
+
+  if (!nombre) {
+    alert('⚠️ Primero crea tu avatar.');
+    window.location.href = 'CREARAVATAR.html';
+  }
+
+  function unirse() {
+    const codigoIngresado = document.getElementById('codigo').value.trim();
+
+    if (codigoIngresado.length === 6 && /^\d+$/.test(codigoIngresado)) {
+      localStorage.setItem('codigoPartida', codigoIngresado);
+
+      // Registrar al jugador en Firebase
+      firebase.database().ref('partidas/' + codigoIngresado + '/jugadores/' + nombre).set({
+        conectado: true
+      });
+
+      window.location.href = 'ESPERANDO.html';
+    } else {
+      mostrarError('❌ El código debe tener 6 dígitos numéricos.');
+    }
+  }
+
+  function mostrarError(texto) {
+    const mensaje = document.getElementById('errorMensaje');
+    mensaje.textContent = texto;
+    mensaje.style.display = 'block';
+  }
+
+  </script>
+</body>
+</html>

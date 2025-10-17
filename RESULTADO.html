@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Resultado Final</title>
+  <link rel="stylesheet" href="EstiloPreguntas.css">
+</head>
+<body>
+  <div class="portada">
+    <h1>Tu perfil ha sido trazado</h1>
+
+   <h3> <p id="rolFinal" class="rol"></p>
+
+    <p class="codigo">Código de partida: <span id="codigoFinal"></span></p></h3>
+
+
+    <div class="resumen">
+    
+  <ul>
+    
+    <H2><li><strong id="pregunta1"></strong></H2>
+    <H3><span id="respuesta1"></span></li></H3>
+      <br>
+    <H2><li><strong id="pregunta2"></strong></H2>
+      <H3><span id="respuesta2"></span></li></H3>
+      <br>
+    <H2><li><strong id="pregunta3"></strong></H2>
+      <H3><span id="respuesta3"></span></li></H3>
+      <br>
+  </ul>
+
+  
+   </div>
+
+<div class="estado-listo">
+  <button id="botonVotacion" disabled>Ir a votación</button>
+  <p id="mensajeHost"></p>
+</div>
+
+<div class="estado-listo">
+  <button id="botonListo">Estoy listo</button>
+  <p id="mensajeListo"></p>
+</div>
+
+
+
+  </div>
+
+  <script>
+
+
+// 🔍 Recupera el rol secreto del jugador
+const miRol = localStorage.getItem('miRol');
+
+// 🎭 Muestra el resultado debajo del perfil
+const rolFinal = document.getElementById('rolFinal');
+
+if (miRol === 'asesino') {
+  rolFinal.textContent = '🩸 Eres el asesino.';
+  rolFinal.style.color = '#900'; // rojo dramático
+} else {
+  rolFinal.textContent = '🕊️ Eres inocente.';
+  rolFinal.style.color = '#333'; // tono neutro
+}
+
+
+
+
+
+    document.getElementById('codigoFinal').textContent = localStorage.getItem('codigoPartida') || '—';
+
+  for (let i = 1; i <= 3; i++) {
+    const pregunta = localStorage.getItem('pregunta' + i) || 'Pregunta no registrada';
+    const respuesta = localStorage.getItem('respuesta' + i) || 'Sin respuesta';
+
+    document.getElementById('pregunta' + i).textContent = pregunta;
+    document.getElementById('respuesta' + i).textContent = respuesta;
+  }
+
+
+
+
+//BOTON DE IR A VOTACIONES SOLO PARA EL HOST
+const jugadores = JSON.parse(localStorage.getItem('jugadoresEnSala')) || [];
+
+function revisarListos() {
+  const listos = JSON.parse(localStorage.getItem('jugadoresListos')) || {};
+  const todosListos = jugadores.length > 0 && jugadores.every(nombre => listos[nombre]);
+
+  const boton = document.getElementById('botonVotacion');
+  const mensaje = document.getElementById('mensajeHost');
+
+  if (todosListos) {
+    boton.disabled = false;
+    mensaje.textContent = '✅ Todos los jugadores están listos.';
+  } else {
+    boton.disabled = true;
+    mensaje.textContent = '⏳ Esperando a que todos pulsen “Listo”…';
+  }
+}
+
+setInterval(revisarListos, 2000);
+
+document.getElementById('botonVotacion').addEventListener('click', () => {
+  window.location.href = 'VOTACION.html';
+});
+
+
+
+
+//BOTON DE IR A VOTACIONES SOLO PARA LOS JUGADORES
+const miNombre = localStorage.getItem('nombreJugador');
+
+document.getElementById('botonListo').addEventListener('click', () => {
+  const listos = JSON.parse(localStorage.getItem('jugadoresListos')) || {};
+  listos[miNombre] = true;
+  localStorage.setItem('jugadoresListos', JSON.stringify(listos));
+
+  document.getElementById('botonListo').disabled = true;
+  document.getElementById('mensajeListo').textContent = '✅ Estás marcado como listo.';
+});
+
+
+
+
+  </script>
+</body>
+</html>

@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Esperando al Host</title>
+  <link rel="stylesheet" href="EstiloEsperando.css">
+</head>
+<body>
+  <div class="portada">
+    <h1>Bienvenido, <span id="nombreJugador"></span></h1>
+    <p>Código de la partida: <strong id="codigoPartida"></strong></p>
+
+    <h2>⏳ Esperando a que el host inicie la partida...</h2>
+    <p id="estado" style="font-size: 18px; margin-top: 20px;"></p>
+  </div>
+
+  <script>
+  const nombre = localStorage.getItem('nombreJugador');
+  const codigo = localStorage.getItem('codigoPartida');
+
+  document.getElementById('nombreJugador').textContent = nombre || '—';
+  document.getElementById('codigoPartida').textContent = codigo || '—';
+
+  // Escuchar el estado de la partida en Firebase
+  firebase.database().ref('partidas/' + codigo + '/estado').on('value', snapshot => {
+    if (snapshot.val() === 'iniciada') {
+      window.location.href = 'PREPREGUNTAS.html';
+    }
+  });
+
+  // Mensaje teatral
+  setInterval(() => {
+    const frases = [
+      '🔍 El host está preparando la partida...',
+      '🎭 Afinando los roles secretos...',
+      '🕵️‍♂️ Reuniendo a los sospechosos...',
+      '📜 Sellando el veredicto...',
+      '⏳ Esperando la señal del maestro de juego...'
+    ];
+    const index = Math.floor(Math.random() * frases.length);
+    document.getElementById('estado').textContent = frases[index];
+  }, 4000);
+</script>
+
+</body>
+</html>

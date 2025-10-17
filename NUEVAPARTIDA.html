@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Crear Partida</title>
+  <link rel="stylesheet" href="EstiloNuevaPartida.css">
+
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/10.5.2/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.5.2/firebase-database.js"></script>
+  <script>
+    const firebaseConfig = {
+      databaseURL: "https://asesinato-en-guadalix-default-rtdb.europe-west1.firebasedatabase.app"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+  </script>
+</head>
+<body>
+  <div class="contenedor">
+    <div class="portada">
+      <h1>Tu código de sala es:</h1>
+      <h3><div id="codigo" class="codigo">------</div></h3>
+      <button class="botones" id="botonEmpezar">Empezar partida</button>
+    </div>
+
+    <div class="panel-jugadores">
+      <h2>Jugadores en la sala:</h2>
+      <ul id="listaJugadores"></ul>
+    </div>
+  </div>
+
+  <script>
+    let codigoPartida = '';
+    let nombreJugador = '';
+    let soyHost = 'True';
+
+    window.onload = () => {
+      nombreJugador = localStorage.getItem('nombreJugador');
+      codigoPartida = localStorage.getItem('codigoPartida');
+      soyHost = localStorage.getItem('soyHost') === 'true';
+
+      if (!nombreJugador) {
+        alert('⚠️ No tienes nombre. Vuelve a CREARAVATAR.');
+        window.location.href = 'CREARAVATAR.html';
+        return;
+      }
+
+      if (soyHost) {
+        // Generar código y crear partida
+        codigoPartida = generarCodigo();
+        localStorage.setItem('codigoPartida', codigoPartida);
+        crearPartidaEnFirebase();
+      }
+
+      document.getElementById('codigo').textContent = codigoPartida;
+      registrarJugador();
+      escucharJugadores();
+
+      document.getElementById('botonEmpezar').addEventListener('click', () => {
+        db.ref('partidas/' + codigoPartida + '/estado').set('iniciada');
+        window.location.href = 'PREPREGUNTAS.html';
+      });
+    };
+
+    function generarCodigo() {
+      let codigo = '';
+      for (let i = 0; i < 6; i++) {
+        codigo += Math.floor(Math.random() * 9) + 1;
+      }
+      return codigo;
+    }
+
+    function crearPartidaEnFirebase() {
+      db.ref('partidas/' + codigoPartida).set({
+        estado: 'esperando',
+        jugadores: {}
+      });
+    }
+
+    function registrarJugador() {
+      db.ref('partidas/' + codigoPartida + '/jugadores/' + nombreJugador).set({
+        conectado: true
+      });
+    }
+
+    function escucharJugadores() {
+      const lista = document.getElementById('listaJugadores');
+      db.ref('partidas/' + codigoPartida + '/jugadores').on('value', snapshot => {
+        lista.innerHTML = '';
+        const jugadores = snapshot.val();
+        if (jugadores) {
+          Object.keys(jugadores).forEach(nombre => {
+            const li = document.createElement('li');
+            li.textContent = nombre;
+            lista.appendChild(li);
+          });
+        }
+      });
+    }
+
+    window.addEventListener('beforeunload', () => {
+      if (codigoPartida && nombreJugador) {
+        db.ref('partidas/' + codigoPartida + '/jugadores/' + nombreJugador).remove();
+      }
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Votación Final</title>
+  <link rel="stylesheet" href="EstiloVotacion.css">
+</head>
+<body>
+  <div class="portada">
+    <h1>¿Quién crees que es el asesino?</h1>
+    <ul id="listaJugadores"></ul>
+    <p id="mensajeVoto"></p>
+  </div>
+
+ <button id="reiniciarPartida">Volver a jugar</button>
+
+  <script>
+    const jugadores = JSON.parse(localStorage.getItem('jugadoresEnSala')) || [];
+    const miNombre = localStorage.getItem('nombreJugador');
+    const yaVote = localStorage.getItem('votoEmitido_' + miNombre);
+
+    const lista = document.getElementById('listaJugadores');
+    const mensaje = document.getElementById('mensajeVoto');
+
+    if (yaVote) {
+      mensaje.textContent = '🗳️ Ya has votado por: ' + yaVote;
+    } else {
+      jugadores.forEach(nombre => {
+        if (nombre === miNombre) return; // No puedes votarte a ti mismo
+
+        const li = document.createElement('li');
+        const boton = document.createElement('button');
+        boton.textContent = nombre;
+        boton.onclick = () => {
+          // Guarda el voto emitido
+          localStorage.setItem('votoEmitido_' + miNombre, nombre);
+
+          // Suma el voto al jugador
+          const votos = JSON.parse(localStorage.getItem('votos')) || {};
+          votos[nombre] = (votos[nombre] || 0) + 1;
+          localStorage.setItem('votos', JSON.stringify(votos));
+
+          mensaje.textContent = '✅ Has votado por: ' + nombre;
+          lista.innerHTML = ''; // Oculta la lista tras votar
+        };
+        li.appendChild(boton);
+        lista.appendChild(li);
+      });
+    }
+
+
+
+
+    document.getElementById('reiniciarPartida').addEventListener('click', () => {
+  // 🔄 Reinicia la partida
+  localStorage.setItem('contadorPreguntas', '0');
+  localStorage.setItem('preguntasUsadas', JSON.stringify([]));
+
+  // 🧹 Borra preguntas y respuestas
+  for (let i = 1; i <= 3; i++) {
+    localStorage.removeItem('pregunta' + i);
+    localStorage.removeItem('respuesta' + i);
+  }
+
+  // 🩸 Borra el rol y el asesino
+  localStorage.removeItem('miRol');
+  localStorage.removeItem('asesinoID');
+  localStorage.removeItem('jugadoresListos');
+
+  // 🧾 Borra el código de partida
+  localStorage.removeItem('codigoPartida');
+
+  // 🚪 Redirige al inicio
+  window.location.href = 'INICIO.html'; // o 'PrePreguntas.html'
+});
+
+
+  </script>
+</body>
+</html>

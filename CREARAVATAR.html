@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Crear Avatar</title>
+  <link rel="stylesheet" href="EstiloPreguntas.css">
+</head>
+<body>
+  <div class="portada">
+    <h1>Elige tu identidad</h1>
+
+    <h3><label for="nombre">Nombre del jugador:</label></h3>
+    <input type="text" id="nombre" placeholder="Ej. Inspector Ramírez">
+
+
+
+       <div class="botones">
+       <button class="siguiente" onclick="guardarAvatar()">Confirmar identidad</button>
+      </div>
+  </div>
+
+  <script>
+
+   
+  function guardarAvatar() {
+    const nombre = document.getElementById('nombre').value.trim();
+    
+
+    if (!nombre) return;
+
+    localStorage.setItem('nombreJugador', nombre);
+   
+
+    // Redirigir a la primera pregunta
+    window.location.href = 'INICIO.html';
+  }
+
+
+  </script>
+
+
+</body>
+</html>

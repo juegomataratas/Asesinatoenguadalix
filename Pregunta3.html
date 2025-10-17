@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pregunta 1</title>
+  <link rel="stylesheet" href="EstiloPreguntas.css">
+</head>
+<body>
+  <div class="portada">
+    <h1 class="pregunta">¿a luisimi por que le dieron?</h1>
+
+     <div class="botones">
+  <button class="respuesta" onclick="guardarRespuesta(this.textContent)">Para asegurarme de que nadie sospechara</button>
+  <button class="respuesta" onclick="guardarRespuesta(this.textContent)">Porque olvidé algo importante</button>
+  <button class="respuesta" onclick="guardarRespuesta(this.textContent)">No lo sé, fue como si algo me llamara</button>
+  <button class="respuesta" onclick="guardarRespuesta(this.textContent)">LUISIMI44</button>
+</div>
+
+
+  </div>
+
+
+
+
+<script>
+  // 🔢 Recupera el contador actual (cuántas preguntas ha respondido)
+  let contador = parseInt(localStorage.getItem('contadorPreguntas')) || 1;
+
+  // 📝 Captura el texto de la pregunta actual
+  const textoPregunta = document.querySelector('.pregunta').textContent;
+
+  // 📄 Obtiene el nombre del archivo actual (ej. "Pregunta1.html")
+  const preguntaActual = window.location.pathname.split('/').pop();
+
+  // ✅ Al cargar la página, marca esta pregunta como usada
+  window.onload = () => {
+    let usadas = JSON.parse(localStorage.getItem('preguntasUsadas')) || [];
+
+    if (!usadas.includes(preguntaActual)) {
+      usadas.push(preguntaActual);
+      localStorage.setItem('preguntasUsadas', JSON.stringify(usadas));
+    }
+  };
+
+  // ✅ Al hacer clic en una respuesta
+  function guardarRespuesta(textoRespuesta) {
+    // Guarda la pregunta y la respuesta con el mismo número
+    localStorage.setItem('pregunta' + contador, textoPregunta);
+    localStorage.setItem('respuesta' + contador, textoRespuesta);
+
+    // Incrementa el contador
+    contador++;
+    localStorage.setItem('contadorPreguntas', contador);
+
+    // Si ya respondió 3 preguntas, va al final
+    if (contador > 3) {
+      window.location.href = 'RESULTADO.html';
+      return;
+    }
+
+    // Lista de todas las páginas de preguntas
+    const paginas = ['Pregunta1.html', 'Pregunta2.html', 'Pregunta3.html', 'Pregunta4.html'];
+
+    // Recupera las preguntas ya usadas
+    const usadas = JSON.parse(localStorage.getItem('preguntasUsadas')) || [];
+
+    // Filtra las que no se han usado aún
+    const disponibles = paginas.filter(p => !usadas.includes(p));
+
+    // Si no quedan preguntas, va al final
+    if (disponibles.length === 0) {
+      window.location.href = 'RESULTADO.html';
+      return;
+    }
+
+    // Elige una pregunta aleatoria entre las disponibles
+    const siguiente = disponibles[Math.floor(Math.random() * disponibles.length)];
+    window.location.href = siguiente;
+  }
+</script>
+
+
+
+
+
+
+</body>
+</html>
